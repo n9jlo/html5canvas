@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+function point(x, y) {
+	var o = new Object();
+	o.x = x;
+	o.y = y;
+	o.drawn = false;
+	return o;
+}
+
+function drawStar(points_, jump_) {
+  var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+  ctx.clearRect(0, 0, c.width, c.height);
+  var centerX = 250;
+  var centerY = 250;
+  var radius = 230;
+  var points = Number(points_);
+  var jump = Number(jump_);
+  console.log("drawStar(" + points + ", " + jump + ")" );
+  var arr = new Array(points);
+//  ctx.beginPath();
+//  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+//  ctx.stroke();
+  var step = 2 * Math.PI / points;
+  for (var  i = 0; i < arr.length; i++) {
+	x = radius * Math.cos(i * step) + centerX;
+	y = radius * Math.sin(i * step) + centerY;
+	arr[i] = point(x, y);
+//	ctx.fillStyle = "#000000";
+//	ctx.fillRect(x-2.5, y-2.5, 5, 5);
+  }
+
+  ctx.beginPath();
+  ctx.fillStyle = "#000000";
+  var currentVertex = 0;
+  var first = true;
+  while( true ) {
+	var v = arr[currentVertex];
+	console.log( "arr[" + currentVertex + "] = " + v);
+	if (!v.drawn) {
+		if (first) {
+			ctx.moveTo(v.x, v.y);
+			first = false;
+		} else {
+			ctx.lineTo(v.x, v.y);
+			v.drawn = true;
+		}
+	} else {
+		nextVertex = (currentVertex + 1) % points;
+		console.log("Restart at " + nextVertex);
+		if(!arr[nextVertex].drawn) {
+			currentVertex = nextVertex;
+			first = true;
+			continue;
+		}
+		break;
+	}
+	currentVertex = (currentVertex + jump) % points;
+	console.log(currentVertex);
+  }
+  ctx.stroke();
+}
+</script>
+        <br/>
+	Points: <input type="range" id="points" min="1" max="200" value="50" /> 
+	<span id="pointsTxt"></span><br/>
+	Step: <input type="range" id="step" min="1" max="100" value="24"/>
+	<span id="stepTxt"></span><br/>
+<script>
+
+var slider = document.getElementById("points");
+var output = document.getElementById("pointsTxt");
+output.innerHTML = slider.value;
+var slider2 = document.getElementById("step");
+var output2 = document.getElementById("stepTxt");
+output2.innerHTML = slider2.value;
+
+slider.oninput = function() {
+  output.innerHTML = this.value;
+  slider2.max = this.value / 2;
+  drawStar(slider.value, slider2.value);
+}
+
+slider2.oninput = function() {
+  output2.innerHTML = this.value;
+  drawStar(slider.value, slider2.value);
+}
+
+
+</script>
+
+
+</body>
+</html>
+
